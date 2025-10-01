@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Readmission Analysis Portfolio</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            padding: 3rem 0;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section h2 i {
+            color: #667eea;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #c62828;
+        }
+
+        .model-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .model-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .model-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .metric-label {
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .prediction-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group select:disabled {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .form-group select.filtered {
+            border-color: #ff9800;
+            background-color: #fff3e0;
+        }
+        
+        .form-group label.filtered::after {
+            content: " (filtered)";
+            font-size: 0.8em;
+            color: #ff9800;
+            font-style: italic;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .prediction-result {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .prediction-result.high-risk {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px solid #c62828;
+        }
+
+        .prediction-result.medium-risk {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 2px solid #ef6c00;
+        }
+
+        .prediction-result.low-risk {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 2px solid #2e7d32;
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-heartbeat"></i> Diabetes Readmission Analysis</h1>
+            <p>Machine Learning Portfolio: Predicting 30-Day Hospital Readmissions using Logistic Regression and XGBoost</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Overview Section -->
+            <section class="section">
+                <h2><i class="fas fa-chart-pie"></i> Dataset Overview</h2>
+                <div id="overview-loading" class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Loading dataset statistics...</p>
+                </div>
+                <div id="overview-content" style="display: none;">
+                    <div class="stats-grid" id="overview-stats"></div>
+                </div>
+                <div id="overview-error" class="error" style="display: none;"></div>
+            </section>
+
+            <!-- Visualizations Section -->
+            <section class="section">
+                <h2><i class="fas fa-chart-bar"></i> Data Visualizations</h2>
+                <div id="viz-loading" class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Generating visualizations...</p>
+                </div>
+                <div id="visualizations-content" style="display: none;">
+                    <div class="chart-container">
+                        <h3>Readmission Rates by Gender and Race</h3>
+                        <canvas id="gender-race-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Readmission Rates by Number of Medications</h3>
+                        <canvas id="medications-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Readmission Rates by Length of Stay</h3>
+                        <canvas id="length-of-stay-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Readmission Rates by Admission Type</h3>
+                        <canvas id="admission-type-chart"></canvas>
+                    </div>
+                </div>
+                <div id="viz-error" class="error" style="display: none;"></div>
+            </section>
+
+            <!-- Model Performance Section -->
+            <section class="section">
+                <h2><i class="fas fa-brain"></i> Model Performance</h2>
+                <div id="model-loading" class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Loading model performance metrics...</p>
+                </div>
+                <div id="model-content" style="display: none;">
+                    <div class="model-comparison" id="model-cards"></div>
+                    <div class="chart-container">
+                        <h3>Model Performance Comparison</h3>
+                        <canvas id="performance-chart"></canvas>
+                    </div>
+                </div>
+                <div id="model-error" class="error" style="display: none;"></div>
+            </section>
+
+            <!-- Prediction Section -->
+            <section class="section">
+                <h2><i class="fas fa-crystal-ball"></i> Predict Readmission Risk</h2>
+                <div class="prediction-form">
+                    <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #2196f3;">
+                        <p style="margin: 0; color: #1565c0; font-size: 0.9rem;">
+                            <i class="fas fa-info-circle"></i> 
+                            <strong>Smart Form:</strong> Fields will automatically filter based on your previous selections to show only relevant medical options. 
+                            Fields with orange borders indicate they've been filtered for medical accuracy.
+                        </p>
+                    </div>
+                    <form id="prediction-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="age">Age Group</label>
+                                <select id="age" name="age" required>
+                                    <option value="">Select Age Group</option>
+                                    <option value="[0-10)">[0-10)</option>
+                                    <option value="[10-20)">[10-20)</option>
+                                    <option value="[20-30)">[20-30)</option>
+                                    <option value="[30-40)">[30-40)</option>
+                                    <option value="[40-50)">[40-50)</option>
+                                    <option value="[50-60)">[50-60)</option>
+                                    <option value="[60-70)">[60-70)</option>
+                                    <option value="[70-80)">[70-80)</option>
+                                    <option value="[80-90)">[80-90)</option>
+                                    <option value="[90-100)">[90-100)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select id="gender" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Male">Male</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="race">Race</label>
+                                <select id="race" name="race" required>
+                                    <option value="">Select Race</option>
+                                    <option value="AfricanAmerican">African American</option>
+                                    <option value="Asian">Asian</option>
+                                    <option value="Caucasian">Caucasian</option>
+                                    <option value="Hispanic">Hispanic</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="admission_type_id">Admission Type</label>
+                                <select id="admission_type_id" name="admission_type_id" required>
+                                    <option value="">Select Admission Type</option>
+                                    <option value="1">Emergency</option>
+                                    <option value="2">Urgent</option>
+                                    <option value="3">Elective</option>
+                                    <option value="4">Newborn</option>
+                                    <option value="5">Not Available</option>
+                                    <option value="6">NULL</option>
+                                    <option value="7">Trauma Center</option>
+                                    <option value="8">Not Mapped</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="time_in_hospital">Length of Stay (days)</label>
+                                <select id="time_in_hospital" name="time_in_hospital" required>
+                                    <option value="">Select Length of Stay</option>
+                                    <option value="1">1 day</option>
+                                    <option value="2">2 days</option>
+                                    <option value="3">3 days</option>
+                                    <option value="4">4 days</option>
+                                    <option value="5">5 days</option>
+                                    <option value="6">6 days</option>
+                                    <option value="7">7 days</option>
+                                    <option value="8">8 days</option>
+                                    <option value="9">9 days</option>
+                                    <option value="10">10 days</option>
+                                    <option value="11">11 days</option>
+                                    <option value="12">12 days</option>
+                                    <option value="13">13 days</option>
+                                    <option value="14">14 days</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="num_medications">Number of Medications</label>
+                                <select id="num_medications" name="num_medications" required>
+                                    <option value="">Select Number of Medications</option>
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                    <option value="24">24</option>
+                                    <option value="25">25</option>
+                                    <option value="26">26</option>
+                                    <option value="27">27</option>
+                                    <option value="28">28</option>
+                                    <option value="29">29</option>
+                                    <option value="30">30</option>
+                                    <option value="31">31</option>
+                                    <option value="32">32</option>
+                                    <option value="33">33</option>
+                                    <option value="34">34</option>
+                                    <option value="35">35</option>
+                                    <option value="36">36</option>
+                                    <option value="37">37</option>
+                                    <option value="38">38</option>
+                                    <option value="39">39</option>
+                                    <option value="40">40</option>
+                                    <option value="41">41</option>
+                                    <option value="42">42</option>
+                                    <option value="43">43</option>
+                                    <option value="44">44</option>
+                                    <option value="45">45</option>
+                                    <option value="46">46</option>
+                                    <option value="47">47</option>
+                                    <option value="48">48</option>
+                                    <option value="49">49</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="num_lab_procedures">Number of Lab Procedures</label>
+                                <select id="num_lab_procedures" name="num_lab_procedures" required>
+                                    <option value="">Select Number of Lab Procedures</option>
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                    <option value="24">24</option>
+                                    <option value="25">25</option>
+                                    <option value="26">26</option>
+                                    <option value="27">27</option>
+                                    <option value="28">28</option>
+                                    <option value="29">29</option>
+                                    <option value="30">30</option>
+                                    <option value="31">31</option>
+                                    <option value="32">32</option>
+                                    <option value="33">33</option>
+                                    <option value="34">34</option>
+                                    <option value="35">35</option>
+                                    <option value="36">36</option>
+                                    <option value="37">37</option>
+                                    <option value="38">38</option>
+                                    <option value="39">39</option>
+                                    <option value="40">40</option>
+                                    <option value="41">41</option>
+                                    <option value="42">42</option>
+                                    <option value="43">43</option>
+                                    <option value="44">44</option>
+                                    <option value="45">45</option>
+                                    <option value="46">46</option>
+                                    <option value="47">47</option>
+                                    <option value="48">48</option>
+                                    <option value="49">49</option>
+                                    <option value="50">50</option>
+                                    <option value="51">51</option>
+                                    <option value="52">52</option>
+                                    <option value="53">53</option>
+                                    <option value="54">54</option>
+                                    <option value="55">55</option>
+                                    <option value="56">56</option>
+                                    <option value="57">57</option>
+                                    <option value="58">58</option>
+                                    <option value="59">59</option>
+                                    <option value="60">60</option>
+                                    <option value="61">61</option>
+                                    <option value="62">62</option>
+                                    <option value="63">63</option>
+                                    <option value="64">64</option>
+                                    <option value="65">65</option>
+                                    <option value="66">66</option>
+                                    <option value="67">67</option>
+                                    <option value="68">68</option>
+                                    <option value="69">69</option>
+                                    <option value="70">70</option>
+                                    <option value="71">71</option>
+                                    <option value="72">72</option>
+                                    <option value="73">73</option>
+                                    <option value="74">74</option>
+                                    <option value="75">75</option>
+                                    <option value="76">76</option>
+                                    <option value="77">77</option>
+                                    <option value="78">78</option>
+                                    <option value="79">79</option>
+                                    <option value="80">80</option>
+                                    <option value="81">81</option>
+                                    <option value="82">82</option>
+                                    <option value="83">83</option>
+                                    <option value="84">84</option>
+                                    <option value="85">85</option>
+                                    <option value="86">86</option>
+                                    <option value="87">87</option>
+                                    <option value="88">88</option>
+                                    <option value="89">89</option>
+                                    <option value="90">90</option>
+                                    <option value="91">91</option>
+                                    <option value="92">92</option>
+                                    <option value="93">93</option>
+                                    <option value="94">94</option>
+                                    <option value="95">95</option>
+                                    <option value="96">96</option>
+                                    <option value="97">97</option>
+                                    <option value="98">98</option>
+                                    <option value="99">99</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="num_procedures">Number of Procedures</label>
+                                <select id="num_procedures" name="num_procedures" required>
+                                    <option value="">Select Number of Procedures</option>
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                    <option value="24">24</option>
+                                    <option value="25">25</option>
+                                    <option value="26">26</option>
+                                    <option value="27">27</option>
+                                    <option value="28">28</option>
+                                    <option value="29">29</option>
+                                    <option value="30">30</option>
+                                    <option value="31">31</option>
+                                    <option value="32">32</option>
+                                    <option value="33">33</option>
+                                    <option value="34">34</option>
+                                    <option value="35">35</option>
+                                    <option value="36">36</option>
+                                    <option value="37">37</option>
+                                    <option value="38">38</option>
+                                    <option value="39">39</option>
+                                    <option value="40">40</option>
+                                    <option value="41">41</option>
+                                    <option value="42">42</option>
+                                    <option value="43">43</option>
+                                    <option value="44">44</option>
+                                    <option value="45">45</option>
+                                    <option value="46">46</option>
+                                    <option value="47">47</option>
+                                    <option value="48">48</option>
+                                    <option value="49">49</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="number_diagnoses">Number of Diagnoses</label>
+                                <select id="number_diagnoses" name="number_diagnoses" required>
+                                    <option value="">Select Number of Diagnoses</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="max_glu_serum">Max Glucose Serum</label>
+                                <select id="max_glu_serum" name="max_glu_serum" required>
+                                    <option value="">Select Glucose Level</option>
+                                    <option value="None">None</option>
+                                    <option value="Norm">Normal</option>
+                                    <option value=">200">>200</option>
+                                    <option value=">300">>300</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="A1Cresult">A1C Result</label>
+                                <select id="A1Cresult" name="A1Cresult" required>
+                                    <option value="">Select A1C Result</option>
+                                    <option value="None">None</option>
+                                    <option value="Norm">Normal</option>
+                                    <option value=">7">>7</option>
+                                    <option value=">8">>8</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="change">Medication Change</label>
+                                <select id="change" name="change" required>
+                                    <option value="">Select Change</option>
+                                    <option value="No">No</option>
+                                    <option value="Ch">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="diabetesMed">Diabetes Medication</label>
+                                <select id="diabetesMed" name="diabetesMed" required>
+                                    <option value="">Select Diabetes Medication</option>
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="discharge_disposition_id">Discharge Disposition</label>
+                                <select id="discharge_disposition_id" name="discharge_disposition_id" required>
+                                    <option value="">Select Discharge Disposition</option>
+                                    <option value="1">Discharged to home</option>
+                                    <option value="2">Discharged/transferred to another short term hospital</option>
+                                    <option value="3">Discharged/transferred to SNF</option>
+                                    <option value="4">Discharged/transferred to ICF</option>
+                                    <option value="5">Discharged/transferred to another type of inpatient care institution</option>
+                                    <option value="6">Discharged/transferred to home with home health service</option>
+                                    <option value="7">Left AMA</option>
+                                    <option value="8">Discharged/transferred to home under care of Home IV provider</option>
+                                    <option value="9">Admitted as an inpatient to this hospital</option>
+                                    <option value="10">Neonate discharged to another hospital for neonatal aftercare</option>
+                                    <option value="11">Expired</option>
+                                    <option value="12">Still patient or expected to return for outpatient services</option>
+                                    <option value="13">Hospice / home</option>
+                                    <option value="14">Hospice / medical facility</option>
+                                    <option value="15">Discharged/transferred within this institution to Medicare approved swing bed</option>
+                                    <option value="16">Discharged/transferred to a federal health care facility</option>
+                                    <option value="17">Discharged/transferred/referred another institution for outpatient services</option>
+                                    <option value="18">Discharged/transferred/referred to this institution for outpatient services</option>
+                                    <option value="19">NULL</option>
+                                    <option value="20">Expired at home. Medicaid only, hospice.</option>
+                                    <option value="21">Expired in a medical facility. Medicaid only, hospice.</option>
+                                    <option value="22">Expired, place unknown. Medicaid only, hospice.</option>
+                                    <option value="23">Discharged/transferred to another rehab fac including rehab units of a hospital</option>
+                                    <option value="24">Discharged/transferred to a long term care hospital</option>
+                                    <option value="25">Discharged/transferred to another psychiatric hospital or psychiatric distinct part unit of a hospital</option>
+                                    <option value="26">Discharged/transferred/referred to a psychiatric hospital of psychiatric distinct part unit of a hospital</option>
+                                    <option value="27">Discharged/transferred to a Critical Access Hospital (CAH)</option>
+                                    <option value="28">Discharged/transferred to another nursing facility</option>
+                                    <option value="29">Discharged/transferred to an Intermediate Care Facility (ICF)</option>
+                                    <option value="30">Discharged/transferred to designated cancer centers or children's hospitals</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="admission_source_id">Admission Source</label>
+                                <select id="admission_source_id" name="admission_source_id" required>
+                                    <option value="">Select Admission Source</option>
+                                    <option value="1">Physician Referral</option>
+                                    <option value="2">Clinic Referral</option>
+                                    <option value="3">HMO Referral</option>
+                                    <option value="4">Transfer from a hospital</option>
+                                    <option value="5">Transfer from a Skilled Nursing Facility (SNF)</option>
+                                    <option value="6">Transfer from another health care facility</option>
+                                    <option value="7">Emergency Room</option>
+                                    <option value="8">Court/Law Enforcement</option>
+                                    <option value="9">Not Available</option>
+                                    <option value="10">Transfer from critial access hospital</option>
+                                    <option value="11">Normal Delivery</option>
+                                    <option value="12">Premature Delivery</option>
+                                    <option value="13">Sick Baby</option>
+                                    <option value="14">Extramural Birth</option>
+                                    <option value="15">Not Available</option>
+                                    <option value="17">NULL</option>
+                                    <option value="18">Transfer From Another Home Health Agency</option>
+                                    <option value="19">Readmission to Same Home Health Agency</option>
+                                    <option value="20">Not Mapped</option>
+                                    <option value="21">Unknown/Invalid</option>
+                                    <option value="22">Transfer from hospital inpt/same fac reslt in sep</option>
+                                    <option value="23">Born inside this hospital</option>
+                                    <option value="24">Born outside this hospital</option>
+                                    <option value="25">Transfer from a hospital</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="number_outpatient">Number of Outpatient Visits</label>
+                                <select id="number_outpatient" name="number_outpatient" required>
+                                    <option value="">Select Number of Outpatient Visits</option>
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                    <option value="24">24</option>
+                                    <option value="25">25</option>
+                                    <option value="26">26</option>
+                                    <option value="27">27</option>
+                                    <option value="28">28</option>
+                                    <option value="29">29</option>
+                                    <option value="30">30</option>
+                                    <option value="31">31</option>
+                                    <option value="32">32</option>
+                                    <option value="33">33</option>
+                                    <option value="34">34</option>
+                                    <option value="35">35</option>
+                                    <option value="36">36</option>
+                                    <option value="37">37</option>
+                                    <option value="38">38</option>
+                                    <option value="39">39</option>
+                                    <option value="40">40</option>
+                                    <option value="41">41</option>
+                                    <option value="42">42</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="number_emergency">Number of Emergency Visits</label>
+                                <select id="number_emergency" name="number_emergency" required>
+                                    <option value="">Select Number of Emergency Visits</option>
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                    <option value="24">24</option>
+                                    <option value="25">25</option>
+                                    <option value="26">26</option>
+                                    <option value="27">27</option>
+                                    <option value="28">28</option>
+                                    <option value="29">29</option>
+                                    <option value="30">30</option>
+                                    <option value="31">31</option>
+                                    <option value="32">32</option>
+                                    <option value="33">33</option>
+                                    <option value="34">34</option>
+                                    <option value="35">35</option>
+                                    <option value="36">36</option>
+                                    <option value="37">37</option>
+                                    <option value="38">38</option>
+                                    <option value="39">39</option>
+                                    <option value="40">40</option>
+                                    <option value="41">41</option>
+                                    <option value="42">42</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="number_inpatient">Number of Inpatient Visits</label>
+                                <select id="number_inpatient" name="number_inpatient" required>
+                                    <option value="">Select Number of Inpatient Visits</option>
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                    <option value="24">24</option>
+                                    <option value="25">25</option>
+                                    <option value="26">26</option>
+                                    <option value="27">27</option>
+                                    <option value="28">28</option>
+                                    <option value="29">29</option>
+                                    <option value="30">30</option>
+                                    <option value="31">31</option>
+                                    <option value="32">32</option>
+                                    <option value="33">33</option>
+                                    <option value="34">34</option>
+                                    <option value="35">35</option>
+                                    <option value="36">36</option>
+                                    <option value="37">37</option>
+                                    <option value="38">38</option>
+                                    <option value="39">39</option>
+                                    <option value="40">40</option>
+                                    <option value="41">41</option>
+                                    <option value="42">42</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                        <button type="submit" class="btn">
+                            <i class="fas fa-crystal-ball"></i> Predict Readmission Risk
+                        </button>
+                            <button type="button" id="reset-form" class="btn" style="background: linear-gradient(135deg, #ff9800, #f57c00);">
+                                <i class="fas fa-undo"></i> Reset Form
+                            </button>
+                        </div>
+                    </form>
+                    <div id="prediction-result" style="display: none;"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Diabetes Readmission Analysis Portfolio. Built with Flask, Node.js, and Machine Learning.</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

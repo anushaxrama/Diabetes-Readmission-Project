@@ -1,0 +1,18 @@
+# Core data science packages
+pandas>=1.5.0
+numpy>=1.21.0
+matplotlib>=3.5.0
+
+# Machine learning packages
+scikit-learn>=1.1.0
+xgboost>=1.6.0
+
+# SHAP for model interpretability (mentioned in the notebook)
+shap>=0.41.0
+
+# Jupyter notebook support
+jupyter>=1.0.0
+ipykernel>=6.0.0
+
+# Additional useful packages for data analysis
+seaborn>=0.11.0
