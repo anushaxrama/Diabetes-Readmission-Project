@@ -2,7 +2,7 @@
 
 A comprehensive web application showcasing machine learning analysis of diabetes patient readmissions using Flask backend and Node.js frontend.
 
-## 🎯 Project Overview
+##  Project Overview
 
 This portfolio demonstrates:
 - **Data Analysis**: 101,766 diabetes patient encounters from 130 US hospitals (1999-2008)
@@ -10,7 +10,7 @@ This portfolio demonstrates:
 - **Visualization**: Interactive charts and data insights
 - **Web Application**: Modern, responsive UI with prediction capabilities
 
-## 🚀 Features
+## Features
 
 ### Backend (Flask)
 - RESTful API endpoints for data analysis
@@ -24,7 +24,7 @@ This portfolio demonstrates:
 - Real-time readmission risk prediction
 - Mobile-friendly interface
 
-## 📊 Key Insights
+##  Key Insights
 
 - **Overall Readmission Rate**: 11.16% (11,357 out of 101,766 patients)
 - **Model Performance**: XGBoost achieves 67.02% ROC-AUC vs 66.22% for Logistic Regression
@@ -129,7 +129,7 @@ diabetes-readmission-portfolio/
 - `GET /health` - Frontend health check
 - `GET /api/*` - Proxies to Flask backend
 
-## 🎨 Technologies Used
+##  Technologies Used
 
 ### Backend
 - **Flask**: Web framework
@@ -161,7 +161,7 @@ diabetes-readmission-portfolio/
 4. **Length of Stay**: Longer stays generally associated with higher readmission rates
 5. **Admission Type**: Emergency admissions show different patterns than elective
 
-## 🚀 Future Enhancements
+##  Future Enhancements
 
 - [ ] Add SHAP feature importance analysis
 - [ ] Implement real-time data updates
@@ -177,7 +177,7 @@ diabetes-readmission-portfolio/
 - The prediction form includes all necessary features for accurate predictions
 - CORS is enabled for development; configure appropriately for production
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch
