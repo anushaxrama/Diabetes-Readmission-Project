@@ -30,7 +30,7 @@ This portfolio demonstrates:
 - **Model Performance**: XGBoost achieves 67.02% ROC-AUC vs 66.22% for Logistic Regression
 - **Key Risk Factors**: Age, number of medications, length of stay, admission type
 
-## 🛠️ Setup Instructions
+## Setup Instructions
 
 ### Prerequisites
 - Python 3.8+ with pip
@@ -94,7 +94,7 @@ This portfolio demonstrates:
 3. **Open browser:**
    Navigate to `http://localhost:3000`
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 diabetes-readmission-portfolio/
@@ -112,7 +112,7 @@ diabetes-readmission-portfolio/
 └── README.md                # This file
 ```
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Backend API (Flask - Port 5000)
 
@@ -146,7 +146,7 @@ diabetes-readmission-portfolio/
 - **HTML5/CSS3**: Modern web standards
 - **JavaScript (ES6+)**: Frontend logic
 
-## 📈 Model Performance
+## Model Performance
 
 | Model | ROC-AUC | PR-AUC |
 |-------|---------|--------|
@@ -170,24 +170,11 @@ diabetes-readmission-portfolio/
 - [ ] Add user authentication
 - [ ] Implement data export features
 
-## 📝 Notes
+## Notes
 
 - The application loads and trains models on startup (may take a few minutes)
 - All visualizations are generated server-side and sent as base64 images
 - The prediction form includes all necessary features for accurate predictions
 - CORS is enabled for development; configure appropriately for production
 
-##  Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-**Built with ❤️ for data science and machine learning education**
